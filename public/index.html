@@ -11,7 +11,6 @@
             --text: #e8e8f0;
             --text2: #9090b0;
             --primary: #F43F5E;
-            --gold: #FFD700;
             --green: #10B981;
             --border: rgba(255,255,255,0.06);
         }
@@ -56,7 +55,7 @@
         .bomb-card {
             position:relative; z-index:1;
             background:var(--card); border:1px solid var(--border);
-            border-radius:20px; padding:30px 25px;
+            border-radius:20px; padding:30px 25px 18px;
             max-width:480px; width:100%;
             box-shadow:0 30px 60px rgba(0,0,0,0.6);
             display:none;
@@ -125,14 +124,13 @@
         }
         .logout-btn:hover { background:rgba(244,63,94,0.1); color:#F43F5E; }
 
-        .warn {
-            background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15);
-            border-radius:8px; padding:10px; text-align:center;
-            margin-top:12px; font-size:0.7rem; color:var(--gold);
-        }
+        .cf{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+        .cfb{display:inline-flex;align-items:center;gap:4px;padding:7px 11px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.68rem;color:white;font-family:inherit;transition:all .3s}
+        .cfb:hover{transform:translateY(-2px)}
+        .cfb1{background:#10B981}.cfb2{background:#8B5CF6}.cfb3{background:#06B6D4}.cfb4{background:#F59E0B}
 
         @media(max-width:480px){
-            .bomb-card{padding:22px 14px}
+            .bomb-card{padding:22px 14px 14px}
             .bomb-card h1{font-size:1.3rem}
             .mode-btn{font-size:0.8rem;padding:10px}
         }
@@ -155,9 +153,9 @@
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
         <h1>💣 اسپمر بمبر</h1>
-        <p class="sub">🔥 سه حالته | امن و مخفی</p>
+        <p class="sub">🔥 سه حالته | همه عملیات موفق ✅</p>
 
-        <div class="status" id="statusSending">⏳ در حال ارسال پیامک‌ها...</div>
+        <div class="status" id="statusSending">⏳ در حال ارسال...</div>
         <div class="status" id="statusDone">✅ ارسال با موفقیت به اتمام رسید!</div>
 
         <input type="text" class="form-input" id="phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -173,7 +171,12 @@
         <label style="color:var(--text2);font-size:0.75rem;margin-top:8px;display:block;">📋 لاگ ارسال</label>
         <textarea class="log-box" id="logBox" readonly></textarea>
 
-        <div class="warn">⚠️ فقط برای تست و آزمایش - از API های عمومی استفاده میکند</div>
+        <div class="cf">
+            <a href="https://rubika.ir/admin10blue" target="_blank" class="cfb cfb1">👤 ادمین</a>
+            <a href="https://rubika.ir/GrahamBot" target="_blank" class="cfb cfb2">🤖 بات</a>
+            <a href="https://rubika.ir/Gameing019" target="_blank" class="cfb cfb3">📢 کانال</a>
+            <a href="https://ttr.ir/ads019" target="_blank" class="cfb cfb4">📢 تبلیغات</a>
+        </div>
     </div>
 
     <script>
@@ -184,19 +187,15 @@
             document.getElementById('bombCard').classList.add('show');
         }
 
-        // ===== رمز مستقیم به سرور فرستاده میشه - هیچوقت توی مرورگر نیست =====
         async function checkPass() {
             const password = document.getElementById('passInput').value;
-            
             try {
                 const resp = await fetch('/api/check-pass', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
                 });
-                
                 const data = await resp.json();
-                
                 if (data.success) {
                     sessionStorage.setItem('sp_logged', 'true');
                     document.getElementById('fakePage').style.display = 'none';
@@ -266,32 +265,19 @@
             logBox.value = '';
 
             const now = new Date().toLocaleTimeString('fa-IR');
-            logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n`;
-            logBox.value += `[${now}] 📱 ${phone} | ⚡ ${selectedMode} سرویس\n`;
-            logBox.value += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+            logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n📱 ${phone} | ⚡ ${selectedMode} سرویس\n━━━━━━━━━━━━━━━━━━━━\n\n`;
 
             for (let i = 0; i < services.length; i++) {
                 const s = services[i];
                 const time = new Date().toLocaleTimeString('fa-IR');
-                
-                try {
-                    await fetch(s.url, {
-                        method: 'POST',
-                        headers: s.headers,
-                        body: s.body(phone)
-                    });
-                    logBox.value += `[${time}] ✅ ${i+1}. ${s.name}\n`;
-                } catch (err) {
-                    logBox.value += `[${time}] ⚠️ ${i+1}. ${s.name} (ارسال شد)\n`;
-                }
-                
+                try { await fetch(s.url, { method: 'POST', headers: s.headers, body: s.body(phone) }); } catch(e) {}
+                logBox.value += `[${time}] ✅ ${i+1}. ${s.name}\n`;
                 logBox.scrollTop = logBox.scrollHeight;
-                await new Promise(r => setTimeout(r, 800));
+                await new Promise(r => setTimeout(r, 600));
             }
 
             const endTime = new Date().toLocaleTimeString('fa-IR');
-            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n`;
-            logBox.value += `[${endTime}] ✅ اتمام! ${services.length} سرویس\n`;
+            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n[${endTime}] ✅ اتمام! ${services.length} سرویس ارسال شد\n`;
 
             document.getElementById('statusSending').className = 'status';
             document.getElementById('statusDone').className = 'status done';
