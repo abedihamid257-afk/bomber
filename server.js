@@ -7,10 +7,7 @@ const SECRET_PASS = process.env.BOMBER_PASSWORD || '5879';
 app.use(express.static('public'));
 app.use(express.json());
 
-app.get('/api/get-secret', (req, res) => {
-    res.json({ secret: SECRET_PASS });
-});
-
+// فقط چک میکنه - رمز رو نشون نمیده
 app.post('/api/check-pass', (req, res) => {
     const { password } = req.body;
     if (password === SECRET_PASS) {
