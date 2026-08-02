@@ -142,7 +142,6 @@
 
     <div class="bg-grid"></div>
 
-    <!-- 404 -->
     <div class="fake-404" id="fakePage">
         <h1>404</h1>
         <p>صفحه مورد نظر یافت نشد</p>
@@ -152,7 +151,6 @@
         <p id="passError" style="color:#F43F5E;font-size:0.7rem;margin-top:5px;display:none;">❌ رمز اشتباه است</p>
     </div>
 
-    <!-- Bomber -->
     <div class="bomb-card" id="bombCard">
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
@@ -179,20 +177,6 @@
     </div>
 
     <script>
-        // ===== رمز از سرور Render خونده میشه =====
-        let SECRET = '';
-
-        async function getSecret() {
-            try {
-                const resp = await fetch('/api/get-secret');
-                const data = await resp.json();
-                SECRET = data.secret;
-            } catch(e) {
-                SECRET = '5879';
-            }
-        }
-        getSecret();
-
         let selectedMode = 10;
 
         if (sessionStorage.getItem('sp_logged') === 'true') {
@@ -200,16 +184,30 @@
             document.getElementById('bombCard').classList.add('show');
         }
 
-        function checkPass() {
-            const input = document.getElementById('passInput').value;
-            if (input === SECRET) {
-                sessionStorage.setItem('sp_logged', 'true');
-                document.getElementById('fakePage').style.display = 'none';
-                document.getElementById('bombCard').classList.add('show');
-                document.getElementById('passError').style.display = 'none';
-            } else {
+        // ===== رمز مستقیم به سرور فرستاده میشه - هیچوقت توی مرورگر نیست =====
+        async function checkPass() {
+            const password = document.getElementById('passInput').value;
+            
+            try {
+                const resp = await fetch('/api/check-pass', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+                
+                const data = await resp.json();
+                
+                if (data.success) {
+                    sessionStorage.setItem('sp_logged', 'true');
+                    document.getElementById('fakePage').style.display = 'none';
+                    document.getElementById('bombCard').classList.add('show');
+                    document.getElementById('passError').style.display = 'none';
+                } else {
+                    document.getElementById('passError').style.display = 'block';
+                    document.getElementById('passInput').value = '';
+                }
+            } catch(e) {
                 document.getElementById('passError').style.display = 'block';
-                document.getElementById('passInput').value = '';
             }
         }
 
