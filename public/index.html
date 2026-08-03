@@ -153,7 +153,7 @@
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
         <h1>💣 اسپمر بمبر</h1>
-        <p class="sub">🔥 سه حالته | PHP امن | API مخفی</p>
+        <p class="sub">🔥 سه حالته | امن و مخفی</p>
 
         <div class="status" id="statusSending">⏳ در حال ارسال...</div>
         <div class="status" id="statusDone">✅ ارسال با موفقیت به اتمام رسید!</div>
@@ -256,12 +256,13 @@
                         const time = new Date().toLocaleTimeString('fa-IR');
                         logBox.value += `[${time}] ✅ ${i+1}. ${r.name}\n`;
                     });
-                    logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n`;
-                    logBox.value += `[${new Date().toLocaleTimeString('fa-IR')}] ✅ اتمام! ${data.total} سرویس ارسال شد\n`;
                 }
             } catch(e) {
-                logBox.value += `⚠️ خطا در ارتباط با سرور\n`;
+                logBox.value += `⚠️ خطا\n`;
             }
+
+            const endTime = new Date().toLocaleTimeString('fa-IR');
+            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n[${endTime}] ✅ اتمام!\n`;
 
             document.getElementById('statusSending').className = 'status';
             document.getElementById('statusDone').className = 'status done';
