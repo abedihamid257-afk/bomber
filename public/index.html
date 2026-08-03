@@ -3,14 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اسپمر بمبر</title>
+    <title>اسپمر بمبر | Spammer Bomber</title>
+    <meta property="og:title" content="اسپمر بمبر | Spammer Bomber">
+    <meta property="og:description" content="پنل مدیریت">
+    <meta property="og:type" content="website">
+    <meta name="robots" content="noindex, nofollow">
+    
     <style>
         :root {
-            --bg: #0a0a0f;
-            --card: #12121a;
-            --text: #e8e8f0;
-            --text2: #9090b0;
-            --primary: #F43F5E;
+            --bg: #030712;
+            --card: #0F0F1A;
+            --text: #F8FAFC;
+            --text2: #94A3B8;
+            --primary: #7C3AED;
+            --secondary: #06B6D4;
+            --accent: #F43F5E;
+            --gold: #FBBF24;
             --green: #10B981;
             --border: rgba(255,255,255,0.06);
         }
@@ -31,35 +39,76 @@
         .bg-grid {
             position: fixed; top:0; left:0; width:100%; height:100%;
             z-index:0; pointer-events:none;
-            background-image: linear-gradient(rgba(244,63,94,0.03) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(244,63,94,0.03) 1px, transparent 1px);
-            background-size:40px 40px;
+            background-image: linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+            background-size:50px 50px;
+            animation:gridShift 20s linear infinite;
         }
+        @keyframes gridShift { 0%{transform:translate(0,0)} 100%{transform:translate(50px,50px)} }
 
-        .login-page { text-align:center; position:relative; z-index:1; }
-        .login-page .logo {
-            font-size:4rem; margin-bottom:10px;
+        .bg-orb {
+            position:fixed; border-radius:50%; filter:blur(100px); opacity:0.3;
+            pointer-events:none; z-index:0;
         }
-        .login-page h1 {
-            font-size:2rem; font-weight:900;
+        .orb-1{width:400px;height:400px;background:rgba(124,58,237,0.4);top:-100px;left:-80px}
+        .orb-2{width:350px;height:350px;background:rgba(6,182,212,0.3);bottom:-100px;right:-60px}
+
+        .login-card {
+            position:relative; z-index:1;
+            background:var(--card); border:1px solid var(--border);
+            border-radius:24px; padding:45px 35px;
+            max-width:440px; width:100%;
+            box-shadow:0 30px 60px rgba(0,0,0,0.6),0 0 100px rgba(124,58,237,0.1);
+            text-align:center;
+            animation:fadeIn 0.6s ease;
+        }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+        .logo {
+            width:75px; height:75px;
+            background:linear-gradient(135deg, #F43F5E, #FF6B35);
+            border-radius:20px; display:inline-flex; align-items:center;
+            justify-content:center; font-size:2.2rem; margin-bottom:18px;
+            box-shadow:0 0 50px rgba(244,63,94,0.5);
+            animation:logoPulse 2s ease-in-out infinite;
+        }
+        @keyframes logoPulse { 0%,100%{box-shadow:0 0 50px rgba(244,63,94,0.5)} 50%{box-shadow:0 0 80px rgba(244,63,94,0.8)} }
+
+        .title {
+            font-size:2rem; font-weight:900; margin-bottom:5px;
             background:linear-gradient(135deg, #F43F5E, #FF6B35, #FFD700);
             -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-            background-clip:text; margin-bottom:5px;
+            background-clip:text;
         }
-        .login-page p { color:var(--text2); font-size:0.85rem; margin-bottom:20px; }
-        .login-page input {
-            padding:10px 16px; background:rgba(255,255,255,0.03);
-            border:2px solid var(--border); border-radius:10px;
-            color:var(--text); font-size:0.9rem; text-align:center;
-            outline:none; width:250px; letter-spacing:3px;
-        }
-        .login-page input:focus { border-color:var(--primary); }
-        .login-page button {
-            padding:10px 28px; background:linear-gradient(135deg, #F43F5E, #FF6B35);
-            color:white; border:none; border-radius:10px; cursor:pointer;
-            font-weight:700; font-family:inherit; margin-top:10px; font-size:0.95rem;
+        .title-en {
+            font-size:0.85rem; font-weight:700; color:var(--text2);
+            letter-spacing:3px; margin-bottom:25px;
         }
 
+        .form-group { margin-bottom:15px; text-align:right; }
+        .form-group label { display:block; margin-bottom:5px; color:var(--text2); font-size:0.78rem; font-weight:600; }
+        .form-input {
+            width:100%; padding:12px 16px; background:rgba(255,255,255,0.03);
+            border:2px solid var(--border); border-radius:12px;
+            color:var(--text); font-size:0.95rem; font-family:inherit;
+            outline:none; transition:all 0.3s; direction:ltr; text-align:center;
+            letter-spacing:4px;
+        }
+        .form-input:focus { border-color:var(--accent); box-shadow:0 0 0 4px rgba(244,63,94,0.1); }
+
+        .btn-login {
+            width:100%; padding:14px; border-radius:14px; border:none;
+            cursor:pointer; font-weight:800; font-size:1rem;
+            color:white; font-family:inherit; transition:all 0.3s;
+            background:linear-gradient(135deg, #F43F5E, #FF6B35);
+            box-shadow:0 8px 30px rgba(244,63,94,0.4); margin-top:12px;
+        }
+        .btn-login:hover { transform:translateY(-3px); box-shadow:0 15px 40px rgba(244,63,94,0.6); }
+        .btn-login:active { transform:scale(0.95); }
+
+        .error-msg { color:#F43F5E; font-size:0.75rem; margin-top:10px; display:none; }
+
+        /* بمبر */
         .bomb-card {
             position:relative; z-index:1;
             background:var(--card); border:1px solid var(--border);
@@ -68,23 +117,15 @@
             box-shadow:0 30px 60px rgba(0,0,0,0.6);
             display:none;
         }
-        .bomb-card.show { display:block; }
+        .bomb-card.show { display:block; animation:fadeIn 0.4s ease; }
 
         .bomb-card h2 {
-            text-align:center; font-size:1.6rem; font-weight:900;
+            text-align:center; font-size:1.5rem; font-weight:900;
             background:linear-gradient(135deg, #F43F5E, #FF6B35, #FFD700);
             -webkit-background-clip:text; -webkit-text-fill-color:transparent;
             background-clip:text; margin-bottom:5px;
         }
         .bomb-card .sub { text-align:center; color:var(--text2); font-size:0.75rem; margin-bottom:18px; }
-
-        .form-input {
-            width:100%; padding:10px 14px; background:rgba(255,255,255,0.03);
-            border:2px solid var(--border); border-radius:10px;
-            color:var(--text); font-size:0.95rem; font-family:inherit;
-            text-align:center; direction:ltr; outline:none; margin-bottom:12px;
-        }
-        .form-input:focus { border-color:var(--primary); }
 
         .mode-btns { display:flex; gap:8px; margin:15px 0; }
         .mode-btn {
@@ -138,8 +179,9 @@
         .cfb1{background:#10B981}.cfb2{background:#8B5CF6}.cfb3{background:#06B6D4}.cfb4{background:#F59E0B}
 
         @media(max-width:480px){
+            .login-card{padding:30px 18px}
             .bomb-card{padding:22px 14px 14px}
-            .login-page h1{font-size:1.5rem}
+            .title{font-size:1.5rem}
             .mode-btn{font-size:0.8rem;padding:10px}
         }
     </style>
@@ -147,16 +189,22 @@
 <body>
 
     <div class="bg-grid"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
 
     <!-- صفحه ورود -->
-    <div class="login-page" id="loginPage">
+    <div class="login-card" id="loginPage">
         <div class="logo">💣</div>
-        <h1>اسپمر بمبر</h1>
-        <p>لطفاً رمز عبور را وارد کنید</p>
-        <input type="password" id="passInput" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')checkPass()">
-        <br>
-        <button onclick="checkPass()">ورود</button>
-        <p id="passError" style="color:#F43F5E;font-size:0.7rem;margin-top:8px;display:none;">❌ رمز عبور اشتباه است</p>
+        <h1 class="title">اسپمر بمبر</h1>
+        <p class="title-en">SPAMMER BOMBER</p>
+
+        <div class="form-group">
+            <label>🔑 رمز عبور</label>
+            <input type="password" class="form-input" id="passInput" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')checkPass()">
+        </div>
+
+        <button class="btn-login" onclick="checkPass()">🚀 ورود</button>
+        <p class="error-msg" id="passError">❌ رمز عبور اشتباه است</p>
     </div>
 
     <!-- بمبر -->
@@ -164,12 +212,12 @@
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
         <h2>💣 اسپمر بمبر</h2>
-        <p class="sub">🔥 سه حالته | امن و مخفی</p>
+        <p class="sub">🔥 سه حالته | Spammer Bomber</p>
 
         <div class="status" id="statusSending">⏳ در حال ارسال...</div>
         <div class="status" id="statusDone">✅ ارسال با موفقیت به اتمام رسید!</div>
 
-        <input type="text" class="form-input" id="phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <input type="text" class="form-input" id="phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'')" style="letter-spacing:0;">
 
         <div class="mode-btns">
             <button class="mode-btn" data-mode="2" onclick="setMode(2, this)">🟢 سبک<span class="count">۲ سرویس</span></button>
@@ -269,7 +317,7 @@
                     });
                 }
             } catch(e) {
-                logBox.value += `⚠️ خطا\n`;
+                logBox.value += `⚠️ خطا در ارتباط\n`;
             }
 
             const endTime = new Date().toLocaleTimeString('fa-IR');
