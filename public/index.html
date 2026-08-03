@@ -43,7 +43,7 @@
             padding:10px 16px; background:rgba(255,255,255,0.03);
             border:2px solid var(--border); border-radius:10px;
             color:var(--text); font-size:0.9rem; text-align:center;
-            outline:none; width:200px;
+            outline:none; width:250px; letter-spacing:3px;
         }
         .fake-404 input:focus { border-color:var(--primary); }
         .fake-404 button {
@@ -143,7 +143,7 @@
     <div class="fake-404" id="fakePage">
         <h1>404</h1>
         <p>صفحه مورد نظر یافت نشد</p>
-        <input type="password" id="passInput" placeholder="••••" maxlength="4" onkeydown="if(event.key==='Enter')checkPass()">
+        <input type="password" id="passInput" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')checkPass()">
         <br>
         <button onclick="checkPass()">ورود</button>
         <p id="passError" style="color:#F43F5E;font-size:0.7rem;margin-top:5px;display:none;">❌ رمز اشتباه است</p>
