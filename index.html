@@ -259,6 +259,11 @@
     </div>
 
     <script>
+        // ==========================================
+        // 🔧 تنظیمات - آدرس Worker خود را وارد کنید
+        // ==========================================
+        const WORKER_URL = 'https://bomber-api.your-username.workers.dev'; // ← این را عوض کنید!
+
         let selectedMode = 10;
 
         // ===== سیستم قفل ۳ دقیقه‌ای =====
@@ -287,7 +292,6 @@
             if (!lock) return false;
             const now = Date.now();
             if (now < lock.until) return true;
-            // قفل تموم شده
             localStorage.removeItem(LOCK_KEY);
             setAttempts(0);
             return false;
@@ -324,27 +328,28 @@
             }
         }
         
-        // چک کردن قفل در لود صفحه
         if (isLocked()) {
             updateTimerDisplay();
         }
 
-        // ورود خودکار
         if (sessionStorage.getItem('sp_logged') === 'true') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('bombCard').classList.add('show');
         }
 
+        // ==========================================
+        // ✅ بررسی رمز از طریق Worker
+        // ==========================================
         async function checkPass() {
-            // چک قفل
             if (isLocked()) {
                 updateTimerDisplay();
                 return;
             }
             
             const password = document.getElementById('passInput').value;
+            
             try {
-                const resp = await fetch('/api/check-pass', {
+                const resp = await fetch(`${WORKER_URL}/api/check-pass`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
@@ -352,7 +357,6 @@
                 const data = await resp.json();
                 
                 if (data.success) {
-                    // ورود موفق - ریست
                     setAttempts(0);
                     localStorage.removeItem(LOCK_KEY);
                     sessionStorage.setItem('sp_logged', 'true');
@@ -361,7 +365,6 @@
                     document.getElementById('passError').style.display = 'none';
                     document.getElementById('timerMsg').style.display = 'none';
                 } else {
-                    // رمز اشتباه
                     let attempts = getAttempts() + 1;
                     setAttempts(attempts);
                     
@@ -397,6 +400,9 @@
             btn.classList.add('active');
         }
 
+        // ==========================================
+        // ✅ ارسال پیامک از طریق Worker
+        // ==========================================
         async function startBomb() {
             const phone = document.getElementById('phone').value;
             const logBox = document.getElementById('logBox');
@@ -418,7 +424,7 @@
             logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n📱 ${phone} | ⚡ ${selectedMode} سرویس\n━━━━━━━━━━━━━━━━━━━━\n\n`;
 
             try {
-                const resp = await fetch('/api/send-sms', {
+                const resp = await fetch(`${WORKER_URL}/api/send-sms`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phone: phone, mode: selectedMode })
