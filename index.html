@@ -1,210 +1,188 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اسپمر بمبر | Spammer Bomber</title>
-    <style>
-        /* ... استایل‌ها مثل قبل ... */
-    </style>
-</head>
-<body>
+<script>
+    let selectedMode = 10;
 
-    <!-- ... HTML مثل قبل ... -->
-
-    <script>
-        // ==========================================
-        // 🔧 آدرس Worker خود را وارد کنید
-        // ==========================================
-        const WORKER_URL = 'https://bomber-api.your-username.workers.dev';
-
-        let selectedMode = 10;
-
-        // ===== سیستم قفل ۳ دقیقه‌ای =====
-        const LOCK_KEY = 'sp_lock';
-        const ATTEMPTS_KEY = 'sp_attempts';
-
-        function getLockData() {
-            const data = localStorage.getItem(LOCK_KEY);
-            return data ? JSON.parse(data) : null;
-        }
-
-        function setLockData(data) {
-            localStorage.setItem(LOCK_KEY, JSON.stringify(data));
-        }
-
-        function getAttempts() {
-            return parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0');
-        }
-
-        function setAttempts(n) {
-            localStorage.setItem(ATTEMPTS_KEY, n.toString());
-        }
-
-        function isLocked() {
-            const lock = getLockData();
-            if (!lock) return false;
-            const now = Date.now();
-            if (now < lock.until) return true;
+    // ===== سیستم قفل ۳ دقیقه‌ای =====
+    const LOCK_KEY = 'sp_lock';
+    const ATTEMPTS_KEY = 'sp_attempts';
+    
+    function getLockData() {
+        const data = localStorage.getItem(LOCK_KEY);
+        return data ? JSON.parse(data) : null;
+    }
+    
+    function setLockData(data) {
+        localStorage.setItem(LOCK_KEY, JSON.stringify(data));
+    }
+    
+    function getAttempts() {
+        return parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0');
+    }
+    
+    function setAttempts(n) {
+        localStorage.setItem(ATTEMPTS_KEY, n.toString());
+    }
+    
+    function isLocked() {
+        const lock = getLockData();
+        if (!lock) return false;
+        const now = Date.now();
+        if (now < lock.until) return true;
+        localStorage.removeItem(LOCK_KEY);
+        setAttempts(0);
+        return false;
+    }
+    
+    function lockFor3Minutes() {
+        setLockData({
+            until: Date.now() + (3 * 60 * 1000),
+            start: Date.now()
+        });
+    }
+    
+    function updateTimerDisplay() {
+        const lock = getLockData();
+        const timerEl = document.getElementById('timerMsg');
+        const inputEl = document.getElementById('passInput');
+        const btnEl = document.getElementById('loginBtn');
+        
+        if (lock && Date.now() < lock.until) {
+            const remaining = Math.ceil((lock.until - Date.now()) / 1000);
+            const min = Math.floor(remaining / 60);
+            const sec = remaining % 60;
+            timerEl.style.display = 'block';
+            timerEl.textContent = `⏳ ${min}:${sec.toString().padStart(2,'0')} تا باز شدن قفل`;
+            inputEl.disabled = true;
+            btnEl.disabled = true;
+            setTimeout(updateTimerDisplay, 1000);
+        } else {
+            timerEl.style.display = 'none';
+            inputEl.disabled = false;
+            btnEl.disabled = false;
             localStorage.removeItem(LOCK_KEY);
             setAttempts(0);
-            return false;
         }
+    }
+    
+    if (isLocked()) {
+        updateTimerDisplay();
+    }
 
-        function lockFor3Minutes() {
-            setLockData({
-                until: Date.now() + (3 * 60 * 1000),
-                start: Date.now()
-            });
-        }
+    if (sessionStorage.getItem('sp_logged') === 'true') {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('bombCard').classList.add('show');
+    }
 
-        function updateTimerDisplay() {
-            const lock = getLockData();
-            const timerEl = document.getElementById('timerMsg');
-            const inputEl = document.getElementById('passInput');
-            const btnEl = document.getElementById('loginBtn');
-
-            if (lock && Date.now() < lock.until) {
-                const remaining = Math.ceil((lock.until - Date.now()) / 1000);
-                const min = Math.floor(remaining / 60);
-                const sec = remaining % 60;
-                timerEl.style.display = 'block';
-                timerEl.textContent = `⏳ ${min}:${sec.toString().padStart(2, '0')} تا باز شدن قفل`;
-                inputEl.disabled = true;
-                btnEl.disabled = true;
-                setTimeout(updateTimerDisplay, 1000);
-            } else {
-                timerEl.style.display = 'none';
-                inputEl.disabled = false;
-                btnEl.disabled = false;
-                localStorage.removeItem(LOCK_KEY);
-                setAttempts(0);
-            }
-        }
-
+    // ==========================================
+    // ✅ بررسی رمز
+    // ==========================================
+    async function checkPass() {
         if (isLocked()) {
             updateTimerDisplay();
+            return;
         }
-
-        if (sessionStorage.getItem('sp_logged') === 'true') {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('bombCard').classList.add('show');
-        }
-
-        // ==========================================
-        // ✅ بررسی رمز از طریق Worker
-        // ==========================================
-        async function checkPass() {
-            if (isLocked()) {
-                updateTimerDisplay();
-                return;
-            }
-
-            const password = document.getElementById('passInput').value;
-
-            try {
-                const resp = await fetch(`${WORKER_URL}/api/check-pass`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: password })
-                });
-                const data = await resp.json();
-
-                if (data.success) {
-                    setAttempts(0);
-                    localStorage.removeItem(LOCK_KEY);
-                    sessionStorage.setItem('sp_logged', 'true');
-                    document.getElementById('loginPage').style.display = 'none';
-                    document.getElementById('bombCard').classList.add('show');
-                    document.getElementById('passError').style.display = 'none';
-                    document.getElementById('timerMsg').style.display = 'none';
-                } else {
-                    let attempts = getAttempts() + 1;
-                    setAttempts(attempts);
-
-                    if (attempts >= 3) {
-                        lockFor3Minutes();
-                        updateTimerDisplay();
-                    }
-
-                    document.getElementById('passError').style.display = 'block';
-                    document.getElementById('passInput').value = '';
-                }
-            } catch (e) {
+        
+        const password = document.getElementById('passInput').value;
+        
+        try {
+            const resp = await fetch('https://bomber-spammer.abedihamid257.workers.dev/api/check-pass', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: password })
+            });
+            const data = await resp.json();
+            
+            if (data.success) {
+                setAttempts(0);
+                localStorage.removeItem(LOCK_KEY);
+                sessionStorage.setItem('sp_logged', 'true');
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('bombCard').classList.add('show');
+                document.getElementById('passError').style.display = 'none';
+                document.getElementById('timerMsg').style.display = 'none';
+            } else {
                 let attempts = getAttempts() + 1;
                 setAttempts(attempts);
+                
                 if (attempts >= 3) {
                     lockFor3Minutes();
                     updateTimerDisplay();
                 }
+                
                 document.getElementById('passError').style.display = 'block';
+                document.getElementById('passInput').value = '';
             }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('sp_logged');
-            document.getElementById('bombCard').classList.remove('show');
-            document.getElementById('loginPage').style.display = 'block';
-            document.getElementById('passInput').value = '';
-        }
-
-        function setMode(mode, btn) {
-            selectedMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        // ==========================================
-        // ✅ ارسال پیامک (واقعی از طریق Worker)
-        // ==========================================
-        async function startBomb() {
-            const phone = document.getElementById('phone').value;
-            const logBox = document.getElementById('logBox');
-            const sendBtn = document.getElementById('sendBtn');
-
-            document.querySelectorAll('.status').forEach(s => s.className = 'status');
-
-            if (!/^09[0-9]{9}$/.test(phone)) {
-                alert('فرمت شماره اشتباه است!');
-                return;
+        } catch(e) {
+            let attempts = getAttempts() + 1;
+            setAttempts(attempts);
+            if (attempts >= 3) {
+                lockFor3Minutes();
+                updateTimerDisplay();
             }
+            document.getElementById('passError').style.display = 'block';
+        }
+    }
 
-            document.getElementById('statusSending').className = 'status sending';
-            sendBtn.disabled = true;
-            sendBtn.textContent = '⏳ در حال ارسال...';
-            logBox.value = '';
+    function logout() {
+        sessionStorage.removeItem('sp_logged');
+        document.getElementById('bombCard').classList.remove('show');
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('passInput').value = '';
+    }
 
-            const now = new Date().toLocaleTimeString('fa-IR');
-            logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n📱 ${phone} | ⚡ ${selectedMode} سرویس\n━━━━━━━━━━━━━━━━━━━━\n\n`;
+    function setMode(mode, btn) {
+        selectedMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
-            try {
-                const resp = await fetch(`${WORKER_URL}/api/send-sms`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: phone, mode: selectedMode })
+    // ==========================================
+    // ✅ ارسال پیامک (واقعی)
+    // ==========================================
+    async function startBomb() {
+        const phone = document.getElementById('phone').value;
+        const logBox = document.getElementById('logBox');
+        const sendBtn = document.getElementById('sendBtn');
+
+        document.querySelectorAll('.status').forEach(s => s.className = 'status');
+
+        if (!/^09[0-9]{9}$/.test(phone)) {
+            alert('فرمت شماره اشتباه است!');
+            return;
+        }
+
+        document.getElementById('statusSending').className = 'status sending';
+        sendBtn.disabled = true;
+        sendBtn.textContent = '⏳ در حال ارسال...';
+        logBox.value = '';
+
+        const now = new Date().toLocaleTimeString('fa-IR');
+        logBox.value += `[${now}] 🚀 شروع اسپمر بمبر\n📱 ${phone} | ⚡ ${selectedMode} سرویس\n━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+        try {
+            const resp = await fetch('https://bomber-spammer.abedihamid257.workers.dev/api/send-sms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone, mode: selectedMode })
+            });
+            const data = await resp.json();
+            
+            if (data.results) {
+                data.results.forEach((r, i) => {
+                    const time = new Date().toLocaleTimeString('fa-IR');
+                    const icon = r.status === 'success' ? '✅' : '📤';
+                    logBox.value += `[${time}] ${icon} ${i+1}. ${r.name}\n`;
                 });
-                const data = await resp.json();
-
-                if (data.results) {
-                    data.results.forEach((r, i) => {
-                        const time = new Date().toLocaleTimeString('fa-IR');
-                        const statusIcon = r.status === 'success' ? '✅' : '📤';
-                        logBox.value += `[${time}] ${statusIcon} ${i+1}. ${r.name}\n`;
-                    });
-                }
-            } catch (e) {
-                logBox.value += `⚠️ خطا در ارسال\n`;
             }
-
-            const endTime = new Date().toLocaleTimeString('fa-IR');
-            logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n[${endTime}] ✅ اتمام!\n`;
-
-            document.getElementById('statusSending').className = 'status';
-            document.getElementById('statusDone').className = 'status done';
-            sendBtn.disabled = false;
-            sendBtn.textContent = '🚀 ارسال پیامک';
+        } catch(e) {
+            logBox.value += `⚠️ خطا\n`;
         }
-    </script>
 
-</body>
-</html>
+        const endTime = new Date().toLocaleTimeString('fa-IR');
+        logBox.value += `\n━━━━━━━━━━━━━━━━━━━━\n[${endTime}] ✅ اتمام!\n`;
+
+        document.getElementById('statusSending').className = 'status';
+        document.getElementById('statusDone').className = 'status done';
+        sendBtn.disabled = false;
+        sendBtn.textContent = '🚀 ارسال پیامک';
+    }
+</script>
